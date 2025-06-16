@@ -2,10 +2,10 @@ FROM ruby:3.4.4
 
 RUN apt-get update -qq && apt-get install -y curl gnupg2 postgresql-client
 
-# Instalar Node.js e Yarn (versão 1.x)
-RUN curl -sL https://deb.nodesource.com/setup_18.x | bash -
-RUN apt-get install -y nodejs
-RUN npm install --global yarn@1.22.19
+# Instalar Node.js 23.x e Yarn 1.x
+RUN curl -fsSL https://deb.nodesource.com/setup_23.x | bash - \
+  && apt-get install -y nodejs \
+  && npm install --global yarn@1.22.19
 
 WORKDIR /app
 
