@@ -10,27 +10,27 @@ RUN apt-get update -qq && apt-get install -y curl gnupg2 postgresql-client build
 # Node.js 23.x
 RUN curl -fsSL https://deb.nodesource.com/setup_23.x | bash - && apt-get install -y nodejs
 
-# Instalar Yarn Classic
+# Yarn Classic (1.x)
 RUN npm install -g yarn@1.22.19
 
-# Instalar pnpm (obrigatório pro Chatwoot 4.x)
+# pnpm (obrigatório para Chatwoot 4.x)
 RUN npm install -g pnpm@10.2.0
 
 WORKDIR /app
 
-# Copiar código-fonte
+# Copia o código
 COPY . .
 
-# Instalar bundler e gems
+# Instala as gems
 RUN gem install bundler && bundle install
 
-# Instalar dependências JS com pnpm (obrigatório pro vite)
+# Instala dependências JS com pnpm
 RUN pnpm install --frozen-lockfile
 
-# Rodar o build do Vite
+# Faz o build manual do Vite antes dos assets Rails
 RUN bundle exec rake vite:build_all
 
-# Precompile Rails assets
+# Agora sim: Precompile Rails assets
 RUN SECRET_KEY_BASE=dummy DATABASE_URL=postgres://dummy@localhost/dummy bundle exec rake assets:precompile
 
 EXPOSE 3000
