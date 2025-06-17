@@ -8,9 +8,15 @@ services:
     autoDeploy: true
     envVars:
       - key: DATABASE_URL
-        fromService: { name: chatwoot-db, property: connectionString }
+        fromDatabase:
+          name: chatwoot-db
+          property: connectionString
+      # pega a URL do Redis (note o "type: redis")
       - key: REDIS_URL
-        fromService: { name: chatwoot-redis, property: connectionString }
+        fromService:
+          name: chatwoot-redis
+          type: redis
+          property: redisUrl
       - key: SECRET_KEY_BASE
         generateValue: true
       - key: RAILS_ENV
@@ -26,8 +32,11 @@ services:
     startCommand: bundle exec sidekiq -C config/sidekiq.yml
     envVars:
       - key: DATABASE_URL
-        fromService: { name: chatwoot-db, property: connectionString }
+        fromDatabase:
+          name: chatwoot-db
+          property: connectionString
       - key: REDIS_URL
-        fromService: { name: chatwoot-redis, property: connectionString }
-      - key: SECRET_KEY_BASE
-        fromService: { name: chatwoot-web, property: env.SECRET_KEY_BASE }
+        fromService:
+          name: chatwoot-redis
+          type: redis
+          property: redisUrl      
