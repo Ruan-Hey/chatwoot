@@ -1,38 +1,37 @@
-FROM ruby:3.4.4
+# Etapa de build
+FROM ruby:3.3 AS rails-build
 
-# Variáveis de ambiente
-ENV NODE_ENV=production
-ENV RAILS_ENV=production
+# Instala dependências básicas
+RUN apt-get update -qq && apt-get install -y build-essential libpq-dev nodejs npm postgresql-client curl git
 
-# Dependências básicas
-RUN apt-get update -qq && apt-get install -y curl gnupg2 postgresql-client build-essential
-
-# Node.js 23.x
-RUN curl -fsSL https://deb.nodesource.com/setup_23.x | bash - && apt-get install -y nodejs
-
-# Yarn Classic (1.x)
-RUN npm install -g yarn@1.22.19
-
-# pnpm (obrigatório para Chatwoot 4.x)
-RUN npm install -g pnpm@10.2.0
+# Instala Node 18.x e Yarn
+RUN curl -sL https://deb.nodesource.com/setup_18.x | bash - && apt-get install -y nodejs
+RUN npm install --global yarn@1.22.19
 
 WORKDIR /app
-
-# Copia o código
 COPY . .
 
-# Instala as gems
-RUN gem install bundler && bundle install
+# Instala gems
+RUN gem install bundler && bundle config set --local without 'development test' && bundle install -j4
 
-# Instala dependências JS com pnpm
-RUN pnpm install --frozen-lockfile
+# Instala pacotes JS
+RUN yarn install --check-files
 
-# Faz o build manual do Vite antes dos assets Rails
-RUN bundle exec rake vite:build_all
+# Precompila assets
+ENV RAILS_ENV=production
+ENV SECRET_KEY_BASE=dummy
+ENV DATABASE_URL=postgres://dummy@localhost/dummy
+RUN bundle exec rake assets:precompile
 
-# Agora sim: Precompile Rails assets
-RUN SECRET_KEY_BASE=dummy DATABASE_URL=postgres://dummy@localhost/dummy bundle exec rake assets:precompile
+# Etapa final (produção)
+FROM ruby:3.3
+
+RUN apt-get update -qq && apt-get install -y libpq-dev postgresql-client curl git nodejs npm
+
+WORKDIR /app
+COPY --from=rails-build /app /app
+
+RUN gem install bundler && bundle config set --local without 'development test' && bundle install -j4
 
 EXPOSE 3000
-
-CMD ["bundle", "exec", "rails", "s", "-b", "0.0.0.0"]
+CMD ["bundle", "exec", "rails", "server", "-b", "0.0.0.0"]
