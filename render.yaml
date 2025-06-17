@@ -1,0 +1,33 @@
+services:
+  # App web
+  - type: web
+    name: chatwoot-web
+    runtime: image
+    image:
+      url: docker.io/chatwoot/chatwoot:v4.2.0   # ou sha256:...
+    autoDeploy: true
+    envVars:
+      - key: DATABASE_URL
+        fromService: { name: chatwoot-db, property: connectionString }
+      - key: REDIS_URL
+        fromService: { name: chatwoot-redis, property: connectionString }
+      - key: SECRET_KEY_BASE
+        generateValue: true
+      - key: RAILS_ENV
+        value: production    
+      - key: ENABLE_ACCOUNT_SIGNUP        # opcional
+        value: "true"
+  # Worker Sidekiq
+  - type: worker
+    name: chatwoot-worker
+    runtime: image
+    image:
+      url: docker.io/chatwoot/chatwoot:v4.2.0    # mesmo tag do web
+    startCommand: bundle exec sidekiq -C config/sidekiq.yml
+    envVars:
+      - key: DATABASE_URL
+        fromService: { name: chatwoot-db, property: connectionString }
+      - key: REDIS_URL
+        fromService: { name: chatwoot-redis, property: connectionString }
+      - key: SECRET_KEY_BASE
+        fromService: { name: chatwoot-web, property: env.SECRET_KEY_BASE }
