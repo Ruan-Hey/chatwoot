@@ -13,9 +13,6 @@ COPY . .
 RUN gem install bundler && bundle install
 RUN yarn install --check-files
 
-# Ajuste temporário: evita erro por falta de env
-RUN RAILS_ENV=production SECRET_KEY_BASE=dummy DATABASE_URL=postgres://dummy@localhost/dummy bundle exec rake assets:precompile
-
 EXPOSE 3000
 
 CMD ["bundle", "exec", "rails", "s", "-b", "0.0.0.0"]
