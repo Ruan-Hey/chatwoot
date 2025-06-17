@@ -1,35 +1,38 @@
 FROM ruby:3.4.4
 
-# Instalar dependências do sistema
-RUN apt-get update -qq && apt-get install -y curl gnupg2 postgresql-client build-essential libpq-dev
+# Variáveis de ambiente
+ENV NODE_ENV=production
+ENV RAILS_ENV=production
 
-# Instalar Node.js 23.x
-RUN curl -fsSL https://deb.nodesource.com/setup_23.x | bash - \
-  && apt-get install -y nodejs
+# Dependências básicas
+RUN apt-get update -qq && apt-get install -y curl gnupg2 postgresql-client build-essential
 
-# Instalar Yarn 1.x
-RUN npm install --global yarn@1.22.19
+# Node.js 23.x
+RUN curl -fsSL https://deb.nodesource.com/setup_23.x | bash - && apt-get install -y nodejs
 
-# Criar diretório de trabalho
+# Instalar Yarn Classic
+RUN npm install -g yarn@1.22.19
+
+# Instalar pnpm (obrigatório pro Chatwoot 4.x)
+RUN npm install -g pnpm@10.2.0
+
 WORKDIR /app
 
-# Copiar código fonte
+# Copiar código-fonte
 COPY . .
 
-# Instalar gems
+# Instalar bundler e gems
 RUN gem install bundler && bundle install
 
-# Instalar dependências Node
-RUN yarn install --check-files
+# Instalar dependências JS com pnpm (obrigatório pro vite)
+RUN pnpm install --frozen-lockfile
 
-# Build do frontend Vite separado
-RUN RAILS_ENV=production bundle exec rake vite:build_all
+# Rodar o build do Vite
+RUN bundle exec rake vite:build_all
 
-# Precompile de assets Rails
-RUN RAILS_ENV=production SECRET_KEY_BASE=dummy DATABASE_URL=postgres://dummy@localhost/dummy bundle exec rake assets:precompile
+# Precompile Rails assets
+RUN SECRET_KEY_BASE=dummy DATABASE_URL=postgres://dummy@localhost/dummy bundle exec rake assets:precompile
 
-# Expor porta
 EXPOSE 3000
 
-# Comando default
 CMD ["bundle", "exec", "rails", "s", "-b", "0.0.0.0"]
