@@ -16,7 +16,7 @@ services:
         fromService:
           name: chatwoot-redis
           type: redis
-          property: redisUrl
+          property: connectionString
       - key: SECRET_KEY_BASE
         generateValue: true
       - key: RAILS_ENV
@@ -39,4 +39,4 @@ services:
         fromService:
           name: chatwoot-redis
           type: redis
-          property: redisUrl      
+          property: connectionString      
