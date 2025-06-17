@@ -3,8 +3,8 @@ FROM ruby:3.4.4
 # Instala dependências básicas
 RUN apt-get update -qq && apt-get install -y curl gnupg2 postgresql-client build-essential libvips
 
-# Instala Node.js 18.x e Yarn 1.x (compatível com Chatwoot e Vite Rails)
-RUN curl -sL https://deb.nodesource.com/setup_18.x | bash - \
+# Instala Node.js 23.x e Yarn 1.x
+RUN curl -sL https://deb.nodesource.com/setup_23.x | bash - \
   && apt-get install -y nodejs \
   && npm install --global yarn@1.22.19
 
@@ -26,4 +26,4 @@ RUN RAILS_ENV=production SECRET_KEY_BASE=dummy DATABASE_URL=postgres://dummy@loc
 
 EXPOSE 3000
 
-CMD ["bundle", "exec", "rails", "server", "-b", "0.0.0.0"]
+CMD ["bundle", "exec", "puma", "-C", "config/puma.rb"]
