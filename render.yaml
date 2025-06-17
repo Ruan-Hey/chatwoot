@@ -6,6 +6,13 @@ services:
     image:
       url: docker.io/chatwoot/chatwoot:v4.2.0   # ou sha256:...
     autoDeploy: true
+    plan: free 
+    startCommand: >
+      bash -c "
+        bundle exec rails db:chatwoot_prepare &&
+        bundle exec sidekiq -C config/sidekiq.yml &     # background
+        exec bundle exec puma -C config/puma.rb          # foreground
+      "
     envVars:
       - key: DATABASE_URL
         fromDatabase:
@@ -23,20 +30,3 @@ services:
         value: production    
       - key: ENABLE_ACCOUNT_SIGNUP        # opcional
         value: "true"
-  # Worker Sidekiq
-  - type: worker
-    name: chatwoot-worker
-    runtime: image
-    image:
-      url: docker.io/chatwoot/chatwoot:v4.2.0    # mesmo tag do web
-    startCommand: bundle exec sidekiq -C config/sidekiq.yml
-    envVars:
-      - key: DATABASE_URL
-        fromDatabase:
-          name: chatwoot-db
-          property: connectionString
-      - key: REDIS_URL
-        fromService:
-          name: chatwoot-redis
-          type: redis
-          property: connectionString      
