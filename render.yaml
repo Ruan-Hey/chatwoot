@@ -4,17 +4,10 @@ services:
     name: chatwoot-web
     runtime: image
     image:
-      url: docker.io/chatwoot/chatwoot:v4.2.0   # ou sha256:...
-    autoDeploy: true
+      url: docker.io/chatwoot/chatwoot:v4.2.0   # ou sha256:...    
     plan: free     
-    startCommand: >
-      /bin/sh -c "
-        echo 1;
-        export PORT=3000;
-        bundle exec rails db:chatwoot_prepare;
-        bundle exec sidekiq -C config/sidekiq.yml &     # background
-        exec bundle exec puma -C config/puma.rb          # foreground
-      "
+    startCommand: echo 1 
+    autoDeploy: true
     envVars:
       - key: DATABASE_URL
         fromDatabase:
