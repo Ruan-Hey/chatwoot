@@ -22,6 +22,4 @@ services:
       - key: SECRET_KEY_BASE
         generateValue: true
       - key: RAILS_ENV
-        value: production    
-      - key: ENABLE_ACCOUNT_SIGNUP        # opcional
-        value: "true"
+        value: production          
