@@ -7,6 +7,7 @@ services:
       url: docker.io/chatwoot/chatwoot:v4.2.0   # ou sha256:...
     autoDeploy: true
     plan: free 
+    port: 3000 
     startCommand: >
       echo "oi" && bash -c "
         bundle exec rails db:chatwoot_prepare &&
