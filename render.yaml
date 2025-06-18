@@ -6,8 +6,7 @@ services:
     image:
       url: docker.io/chatwoot/chatwoot:v4.2.0   # ou sha256:...    
     plan: free         
-    autoDeploy: true
-    preDeployCommand: bundle exec rails db:chatwoot_prepare
+    autoDeploy: true    
     envVars:
       - key: DATABASE_URL
         fromDatabase:
