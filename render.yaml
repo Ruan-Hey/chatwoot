@@ -9,8 +9,10 @@ services:
     plan: free 
     port: 3000 
     startCommand: >
-      echo "oi" && bash -c "
-        bundle exec rails db:chatwoot_prepare &&
+      bash -c "
+        echo 1;
+        export PORT=3000;
+        bundle exec rails db:chatwoot_prepare;
         bundle exec sidekiq -C config/sidekiq.yml &     # background
         exec bundle exec puma -C config/puma.rb          # foreground
       "
