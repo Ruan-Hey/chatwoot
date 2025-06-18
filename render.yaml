@@ -6,7 +6,7 @@ services:
     image:
       url: docker.io/chatwoot/chatwoot:v4.2.0   # ou sha256:...    
     plan: free     
-    startCommand: /bin/sh -c 'echo 1 && bundle exec rails db:chatwoot_prepare && exec bundle exec rails s -p 3000 -b 0.0.0.0' 
+    dockerCommand: /bin/sh -c 'echo 1 && bundle exec rails db:chatwoot_prepare && exec bundle exec rails s -p 3000 -b 0.0.0.0' 
     autoDeploy: true
     envVars:
       - key: DATABASE_URL
