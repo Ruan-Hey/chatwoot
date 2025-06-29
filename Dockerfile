@@ -10,4 +10,4 @@ COPY render-entrypoint.sh /usr/bin/
 RUN chmod +x /usr/bin/render-entrypoint.sh
 
 # Define o comando padrão
-CMD ["bash", "/usr/local/bin/render-entrypoint.sh"]
+CMD ["/bin/sh", "/usr/local/bin/render-entrypoint.sh"]

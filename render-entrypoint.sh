@@ -1,12 +1,16 @@
-# render-entrypoint.sh  ── inicia Puma e Sidekiq no mesmo container
-#!/usr/bin/env bash
+#!/bin/sh
 set -e
 
 # Inicia o servidor web (Puma) em background
 bundle exec rails s -p "${PORT:-3000}" -b 0.0.0.0 &
+PUMA_PID=$!
 
-# Inicia o Sidekiq com a concorrência desejada
+# Inicia o Sidekiq em background
 bundle exec sidekiq -C config/sidekiq.yml -c "${SIDEKIQ_CONCURRENCY:-3}" &
+SIDEKIQ_PID=$!
 
-# Fica aguardando; se qualquer processo morrer, o container termina e o Render reinicia
-wait -n
+# Se matar o contêiner, repasse o sinal aos filhos
+trap 'kill $PUMA_PID $SIDEKIQ_PID' INT TERM
+
+# Espera ambos os processos (não há wait -n no /bin/sh)
+wait
