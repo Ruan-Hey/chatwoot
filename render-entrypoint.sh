@@ -5,6 +5,7 @@ set -e
 bundle exec rails s -p "${PORT:-3000}" -b 0.0.0.0 &
 PUMA_PID=$!
 
+
 echo "!!!!!! Iniciou Puma"
 
 # Inicia o Sidekiq em background
