@@ -2,7 +2,7 @@
 FROM docker.io/chatwoot/chatwoot:v4.2.0
 
 # Copia o seu entrypoint customizado
-COPY render-entrypoint.sh /usr/bin/
+COPY render-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/bin/render-entrypoint.sh
 
 # Define o comando padrão
