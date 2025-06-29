@@ -9,7 +9,7 @@ PUMA_PID=$!
 echo "!!!!!! Iniciou Puma"
 
 # Inicia o Sidekiq em background
-bundle exec sidekiq -C config/sidekiq.yml -c "${SIDEKIQ_CONCURRENCY:2}" &
+bundle exec sidekiq -C config/sidekiq.yml -c 2 &
 SIDEKIQ_PID=$!
 
 echo "!!!!!! Iniciou Sidekiq"
