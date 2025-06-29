@@ -6,7 +6,7 @@ bundle exec rails s -p "${PORT:-3000}" -b 0.0.0.0 &
 PUMA_PID=$!
 
 # Inicia o Sidekiq em background
-bundle exec sidekiq -C config/sidekiq.yml -c "${SIDEKIQ_CONCURRENCY:-3}" &
+bundle exec sidekiq -C config/sidekiq.yml -c "${SIDEKIQ_CONCURRENCY:2}" &
 SIDEKIQ_PID=$!
 
 # Se matar o contêiner, repasse o sinal aos filhos

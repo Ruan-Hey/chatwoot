@@ -20,4 +20,11 @@ services:
       - key: SECRET_KEY_BASE
         generateValue: true
       - key: RAILS_ENV
-        value: production          
+        value: production       
+      - key: WEB_CONCURRENCY     # 0 = 1 worker
+        value: "0"
+      - key: RAILS_MAX_THREADS   # ↓ reduz pool de conexões
+        value: "3"
+      # ↓ Sidekiq
+      - key: SIDEKIQ_CONCURRENCY # padrão é 10!
+        value: "2"   
